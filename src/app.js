@@ -2,6 +2,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
+const welcomePage = require('./utils/html.page');
 
 const authRoutes = require('./routes/auth.routes');
 const accountRoutes = require('./routes/account.routes');
@@ -21,9 +22,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 app.get('/', (_req, res) => {
-  res.json({
-    message: "API is running..."
-  })
+  res.send(welcomePage)
 })
 
 // ── Health check ─────────────────────────────────────────────────────────────
