@@ -2,12 +2,12 @@ require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/database');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {
   await connectDB();
   app.listen(PORT, () => {
-    console.log(`\n🚀 Digital Bank API running on port ${PORT}`);
+    console.log(`\n --- Digital Bank API running on port ${PORT} ---`);
     console.log(`   ENV: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   Health: http://localhost:${PORT}/health\n`);
   });

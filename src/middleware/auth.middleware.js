@@ -13,8 +13,10 @@ const protect = async (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("active", decoded)
 
     const customer = await Customer.findById(decoded.id).select('-password');
+    console.log(customer)
     if (!customer) {
       return res.status(401).json({ message: 'Token is invalid or user no longer exists.' });
     }
@@ -26,8 +28,13 @@ const protect = async (req, res, next) => {
     req.customer = customer;
     next();
   } catch (error) {
+  // console.log("JWT ERROR:", error.message);
+  // console.log("JWT NAME:", error.name);
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Token expired. Please log in again.' });
+    }
+    if(error.name === "JsonWebTokenError"){
+      return res.status(401).json({message: "Invalid signature"})
     }
     return res.status(401).json({ message: 'Invalid token.' });
   }

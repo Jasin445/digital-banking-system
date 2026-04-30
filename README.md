@@ -6,13 +6,14 @@ A full backend banking system built with Node.js, Express, and MongoDB, integrat
 
 ## Tech Stack
 
-- **Runtime**: Node.js (v18+)
-- **Framework**: Express.js
-- **Database**: MongoDB + Mongoose
-- **Auth**: JWT (jsonwebtoken + bcryptjs)
-- **External API**: NIBSS by Phoenix (`https://nibssbyphoenix.onrender.com`)
-- **Validation**: express-validator
-- **Testing**: Jest + Supertest
+| Layer | Technology |
+| --- | --- |
+| Runtime | Node.js (v18+) |
+| Framework | Express.js |
+| Database | MongoDB + Mongoose |
+| Auth | JWT (jsonwebtoken + bcryptjs) |
+| External API | NIBSS by Phoenix |
+| Validation | express-validator |
 
 ---
 
@@ -22,14 +23,14 @@ A full backend banking system built with Node.js, Express, and MongoDB, integrat
 digital-bank-backend/
 ├── src/
 │   ├── config/
-│   │   └── database.js          # MongoDB connection
+│   │   └── database.js                 # MongoDB connection
 │   ├── controllers/
-│   │   ├── auth.controller.js   # Register, login, profile
+│   │   ├── auth.controller.js
 │   │   ├── account.controller.js
 │   │   └── transaction.controller.js
 │   ├── middleware/
-│   │   ├── auth.middleware.js   # JWT guard, KYC guard
-│   │   ├── error.middleware.js  # Central error handler
+│   │   ├── auth.middleware.js          # JWT guard, KYC guard
+│   │   ├── error.middleware.js         # Central error handler
 │   │   └── validation.middleware.js
 │   ├── models/
 │   │   ├── customer.model.js
@@ -40,18 +41,13 @@ digital-bank-backend/
 │   │   ├── account.routes.js
 │   │   └── transaction.routes.js
 │   ├── scripts/
-│   │   ├── nibss-onboard.js     # One-time bank onboarding with NIBSS
-│   │   └── seed-identity.js    # Seed test BVN/NIN records
+│   │   └── nibss-onboard.js           # One-time bank onboarding with NIBSS
 │   ├── services/
-│   │   └── nibss.service.js    # All NIBSS API calls (token cached)
+│   │   └── nibss.service.js           # All NIBSS API calls (token cached)
 │   ├── utils/
 │   │   └── jwt.utils.js
-│   ├── app.js                  # Express app (no server.listen)
-│   └── server.js               # Entry point
-├── tests/
-│   ├── auth.test.js
-│   ├── account.test.js
-│   └── transaction.test.js
+│   ├── app.js                         # Express app (no server.listen)
+│   └── server.js                      # Entry point
 ├── .env.example
 ├── .gitignore
 └── package.json
@@ -59,9 +55,9 @@ digital-bank-backend/
 
 ---
 
-## Quick Start
+## Getting Started
 
-### 1. Clone and Install
+### Step 1 — Clone and Install
 
 ```bash
 git clone <your-repo>
@@ -69,13 +65,13 @@ cd digital-bank-backend
 npm install
 ```
 
-### 2. Configure Environment
+### Step 2 — Configure Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`:
+Open `.env` and fill in the following:
 
 ```env
 PORT=5000
@@ -84,29 +80,23 @@ MONGODB_URI=mongodb://localhost:27017/digital_bank
 JWT_SECRET=change_this_to_a_strong_random_string
 JWT_EXPIRES_IN=7d
 NIBSS_BASE_URL=https://nibssbyphoenix.onrender.com
-NIBSS_API_KEY=        # filled after step 3
-NIBSS_API_SECRET=     # filled after step 3
-BANK_CODE=            # filled after step 3
-BANK_NAME=            # filled after step 3
+NIBSS_API_KEY=        # filled after Step 3
+NIBSS_API_SECRET=     # filled after Step 3
+BANK_CODE=            # filled after Step 3
+BANK_NAME=            # filled after Step 3
 ```
 
-### 3. Onboard Your Bank with NIBSS (run once)
+### Step 3 — Onboard Your Bank with NIBSS
+
+> This only needs to be run **once**.
 
 ```bash
 BANK_NAME="YourBankName" BANK_EMAIL="you@example.com" node src/scripts/nibss-onboard.js
 ```
 
-Copy the printed credentials into your `.env`.
+Copy the printed credentials into your `.env` before proceeding.
 
-### 4. (Optional) Seed Test Identities
-
-```bash
-node src/scripts/seed-identity.js
-```
-
-Creates two test identities (BVN + NIN) in NIBSS you can use for registration.
-
-### 5. Start the Server
+### Step 4 — Start the Server
 
 ```bash
 # Development (auto-reload)
@@ -116,23 +106,14 @@ npm run dev
 npm start
 ```
 
-### 6. Run Tests
-
-```bash
-npm test
-```
-
 ---
 
 ## API Reference
 
-### Base URL
-```
-http://localhost:5000
-```
+**Base URL:** `http://localhost:5000`
 
-### Authentication
-All protected routes require:
+All protected routes (`🔒`) require the following header:
+
 ```
 Authorization: Bearer <your_jwt_token>
 ```
@@ -142,9 +123,11 @@ Authorization: Bearer <your_jwt_token>
 ### Auth Endpoints
 
 #### `POST /api/auth/register`
-Register a new customer. KYC is created and verified against NIBSS during registration. Name and DOB must match NIBSS records exactly.
 
-**Body:**
+Registers a new customer. KYC is created and verified against NIBSS during registration — the customer's name and date of birth must match NIBSS records exactly.
+
+**Request Body:**
+
 ```json
 {
   "firstName": "Amaka",
@@ -159,10 +142,16 @@ Register a new customer. KYC is created and verified against NIBSS during regist
 ```
 
 **Response `201`:**
+
 ```json
 {
   "token": "<jwt>",
-  "customer": { "firstName": "Amaka", "lastName": "Okafor", "email": "...", "onboardingStatus": "verified" },
+  "customer": {
+    "firstName": "Amaka",
+    "lastName": "Okafor",
+    "email": "amaka@example.com",
+    "onboardingStatus": "verified"
+  },
   "message": "Registration successful. Please create your bank account to complete onboarding."
 }
 ```
@@ -171,31 +160,42 @@ Register a new customer. KYC is created and verified against NIBSS during regist
 
 #### `POST /api/auth/login`
 
-**Body:**
+**Request Body:**
+
 ```json
-{ "email": "amaka@example.com", "password": "securepassword" }
+{
+  "email": "amaka@example.com",
+  "password": "securepassword"
+}
 ```
 
 **Response `200`:**
+
 ```json
-{ "token": "<jwt>", "customer": { ... } }
+{
+  "token": "<jwt>",
+  "customer": { }
+}
 ```
 
 ---
 
-#### `GET /api/auth/me` 🔒
-Returns the authenticated customer's profile.
+#### `GET /api/auth/me` `🔒`
+
+Returns the authenticated customer's profile. No request body required.
 
 ---
 
 ### Account Endpoints
 
-All require `Authorization: Bearer <token>`.
+All account endpoints require `Authorization: Bearer <token>`.
 
-#### `POST /api/accounts/create` 🔒
-Creates a NIBSS-backed account. Requires KYC to be verified (happens at registration). One account per customer.
+#### `POST /api/accounts/create` `🔒`
+
+Creates a NIBSS-backed bank account. KYC must be verified (completed at registration) before this can be called. Each customer is limited to one account.
 
 **Response `201`:**
+
 ```json
 {
   "message": "Account created successfully.",
@@ -211,28 +211,34 @@ Creates a NIBSS-backed account. Requires KYC to be verified (happens at registra
 
 ---
 
-#### `GET /api/accounts/me` 🔒
-Returns authenticated customer's account details with live balance from NIBSS.
+#### `GET /api/accounts/me` `🔒`
+
+Returns the authenticated customer's account details with their balance refreshed live from NIBSS. No request body required.
 
 ---
 
-#### `GET /api/accounts/balance` 🔒
-Returns current account balance (refreshed from NIBSS).
+#### `GET /api/accounts/balance` `🔒`
+
+Returns the customer's current account balance, refreshed directly from NIBSS.
 
 ```json
-{ "accountNumber": "1084071287", "balance": 14000 }
+{
+  "accountNumber": "1084071287",
+  "balance": 14000
+}
 ```
 
 ---
 
-#### `GET /api/accounts/name-enquiry/:accountNumber` 🔒
-Look up any account number to get the holder's name before a transfer.
+#### `GET /api/accounts/name-enquiry/:accountNumber` `🔒`
+
+Looks up any account number to retrieve the account holder's name. Recommended to call this before initiating a transfer to confirm the recipient.
 
 ```json
 {
   "accountNumber": "1087207670",
-  "accountName": "Chukwuemeka Nwosu",
-  "bankName": "PHC Bank"
+  "accountName": "Jude David",
+  "bankName": "JAS Bank"
 }
 ```
 
@@ -240,12 +246,14 @@ Look up any account number to get the holder's name before a transfer.
 
 ### Transaction Endpoints
 
-All require `Authorization: Bearer <token>` **and** completed onboarding.
+All transaction endpoints require `Authorization: Bearer <token>` and a fully completed onboarding.
 
-#### `POST /api/transactions/transfer` 🔒
-Initiates intra-bank or inter-bank transfer. Automatically performs name enquiry, balance check, and routes via NIBSS.
+#### `POST /api/transactions/transfer` `🔒`
 
-**Body:**
+Initiates an intra-bank or inter-bank transfer. Automatically performs a name enquiry, balance check, and routes the transfer via NIBSS.
+
+**Request Body:**
+
 ```json
 {
   "toAccount": "1087207670",
@@ -255,6 +263,7 @@ Initiates intra-bank or inter-bank transfer. Automatically performs name enquiry
 ```
 
 **Response `200`:**
+
 ```json
 {
   "message": "Transfer successful.",
@@ -273,78 +282,87 @@ Initiates intra-bank or inter-bank transfer. Automatically performs name enquiry
 }
 ```
 
-**Error `400`** — insufficient funds:
-```json
-{ "message": "Insufficient funds.", "availableBalance": 500 }
-```
+**Response `400` — Insufficient Funds:**
 
----
-
-#### `GET /api/transactions` 🔒
-Returns the authenticated customer's own transaction history. Supports pagination and filtering.
-
-**Query params:**
-| Param | Values | Default |
-|-------|--------|---------|
-| `page` | number | 1 |
-| `limit` | number | 20 |
-| `type` | `debit` \| `credit` | — |
-| `status` | `SUCCESS` \| `FAILED` \| `PENDING` | — |
-
-**Response:**
 ```json
 {
-  "total": 5,
-  "page": 1,
-  "pages": 1,
-  "transactions": [ ... ]
+  "message": "Insufficient funds.",
+  "availableBalance": 500
 }
 ```
 
 ---
 
-#### `GET /api/transactions/:transactionId` 🔒
-Returns a single transaction. Returns `404` if the transaction does not belong to the authenticated customer (data isolation enforced).
+#### `GET /api/transactions` `🔒`
+
+Returns the authenticated customer's own transaction history. Supports pagination and filtering.
+
+**Query Parameters:**
+
+| Parameter | Accepted Values | Default |
+| --- | --- | --- |
+| `page` | number | `1` |
+| `limit` | number | `20` |
+| `type` | `debit` or `credit` | — |
+| `status` | `SUCCESS`, `FAILED`, or `PENDING` | — |
+
+**Response `200`:**
+
+```json
+{
+  "total": 5,
+  "page": 1,
+  "pages": 1,
+  "transactions": [ ]
+}
+```
 
 ---
 
-#### `GET /api/transactions/status/:nibssTransactionId` 🔒
-Queries NIBSS directly for transaction status (TSQ). Also updates local record.
+#### `GET /api/transactions/:transactionId` `🔒`
+
+Returns a single transaction by ID. Returns `404` if the transaction does not belong to the authenticated customer — data isolation is strictly enforced.
+
+---
+
+#### `GET /api/transactions/status/:nibssTransactionId` `🔒`
+
+Performs a Transaction Status Query (TSQ) directly against NIBSS and updates the local transaction record with the latest status.
 
 ---
 
 ## HTTP Status Codes
 
 | Code | Meaning |
-|------|---------|
+| --- | --- |
 | `200` | OK |
 | `201` | Created |
-| `400` | Bad request / business rule violation |
+| `400` | Bad request or business rule violation |
 | `401` | Missing or expired JWT |
-| `403` | Forbidden (KYC not done / onboarding incomplete) |
+| `403` | Forbidden — KYC not completed or onboarding incomplete |
 | `404` | Resource not found |
-| `409` | Conflict (duplicate email, BVN already linked, etc.) |
+| `409` | Conflict — duplicate email, BVN already linked, etc. |
 | `422` | Validation failed |
 | `500` | Internal server error |
 
 ---
 
-## Data Privacy & Isolation
+## Data Privacy & Security
 
-- Customers can only view **their own** transactions — enforced by filtering on `customerId` in every DB query.
-- Passwords are hashed with **bcrypt** (salt rounds: 12).
-- KYC IDs are **never returned** in any API response (`toJSON()` strips them).
-- JWTs expire per `JWT_EXPIRES_IN` setting (default 7 days).
+- Customers can only view **their own** transactions — every database query filters by `customerId`.
+- Passwords are hashed with **bcrypt** at 12 salt rounds.
+- KYC IDs are **never returned** in any API response — stripped via `toJSON()`.
+- JWTs expire based on the `JWT_EXPIRES_IN` environment variable (default: 7 days).
 
 ---
 
 ## Full Customer Journey
 
 ```
-1. POST /api/auth/register        — KYC created and verified with NIBSS inline
-2. POST /api/accounts/create      — Account created on NIBSS, pre-funded ₦15,000
-3. GET  /api/accounts/name-enquiry/:no — Confirm recipient before transfer
-4. POST /api/transactions/transfer — Send funds (intra or inter-bank)
-5. GET  /api/transactions          — Review transaction history
-6. GET  /api/transactions/status/:nibssTxId — TSQ if needed
+1. POST /api/auth/register                      — KYC verified with NIBSS at registration
+2. POST /api/accounts/create                    — Account created on NIBSS, pre-funded ₦15,000
+3. GET  /api/accounts/name-enquiry/:accountNo   — Confirm recipient before transfer
+4. POST /api/transactions/transfer              — Send funds (intra or inter-bank)
+5. GET  /api/transactions                       — Review transaction history
+6. GET  /api/transactions/status/:nibssTxId     — TSQ if needed
 ```
