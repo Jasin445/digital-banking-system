@@ -9,7 +9,11 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`\n --- Digital Bank API running on port ${PORT} ---`);
     console.log(`   ENV: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`   Health: http://localhost:${PORT}/health\n`);
+    console.log(`   Health: ${
+      process.env.NODE_ENV === 'production'
+        ? `https://${process.env.NIBSS_BASE_URL || 'https://nibssbyphoenix.onrender.com'}/health`
+        : `http://localhost:${PORT}/health`
+    }`);
   });
 };
 

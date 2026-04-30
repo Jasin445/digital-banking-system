@@ -20,8 +20,14 @@ if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));
 }
 
+app.get('/', (_req, res) => {
+  res.json({
+    message: "API is running..."
+  })
+})
+
 // ── Health check ─────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     service: 'Digital Bank API',
