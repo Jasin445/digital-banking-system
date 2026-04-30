@@ -130,14 +130,14 @@ Registers a new customer. KYC is created and verified against NIBSS during regis
 
 ```json
 {
-  "firstName": "Amaka",
-  "lastName": "Okafor",
-  "email": "amaka@example.com",
-  "phone": "08099887766",
+  "firstName": "Dora",
+  "lastName": "Matthew",
+  "email": "dora@example.com",
+  "phone": "07098000926",
   "password": "securepassword",
-  "dob": "1995-06-15",
+  "dob": "1999-03-09",
   "kycType": "bvn",
-  "kycID": "22345678901"
+  "kycID": "22389837362"
 }
 ```
 
@@ -147,9 +147,9 @@ Registers a new customer. KYC is created and verified against NIBSS during regis
 {
   "token": "<jwt>",
   "customer": {
-    "firstName": "Amaka",
-    "lastName": "Okafor",
-    "email": "amaka@example.com",
+    "firstName": "Dora",
+    "lastName": "Matthew",
+    "email": "dora@example.com",
     "onboardingStatus": "verified"
   },
   "message": "Registration successful. Please create your bank account to complete onboarding."
@@ -201,7 +201,7 @@ Creates a NIBSS-backed bank account. KYC must be verified (completed at registra
   "message": "Account created successfully.",
   "account": {
     "accountNumber": "1084071287",
-    "accountName": "Amaka Okafor",
+    "accountName": "Dora Matthew",
     "bankCode": "108",
     "bankName": "YourBank",
     "balance": 15000
