@@ -22,7 +22,11 @@ if (process.env.NODE_ENV !== 'test') {
 
 app.get('/', (_req, res) => {
   res.json({
-    message: "API is running..."
+    message: "API is running...",
+    author: "Jason Dagana",
+    cohort: "Novara Cohort",
+    course: "Software Development",
+    motto: " We rise together with others!!"
   })
 })
 
